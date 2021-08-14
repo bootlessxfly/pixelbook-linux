@@ -4,8 +4,8 @@ main_workdir: /opt/eve-linux-setup
 login_user: vagrant # override at command line with local username
 
 # install-kernel.yml
-kernel_install_type: deb
-force_kernel_install: false 
+kernel_install_type: src
+force_kernel_install: false
 
 eve_kernel_name: "4.4.178chromium-g4245c5e1"
 
@@ -26,4 +26,3 @@ kernel_debug_deb: "{{ gh_deb_base_url }}/linux-image-{{ kernel_deb_revision }}-d
 kernel_headers_deb: "{{ gh_deb_base_url }}/linux-headers-{{ kernel_deb_arch }}.deb"
 kernel_firmware_deb: "{{ gh_deb_base_url }}/linux-firmware-image-{{ kernel_deb_arch }}.deb"
 kernel_libc_dev_deb: "{{ gh_deb_base_url }}/linux-libc-dev_{{ kernel_deb_revision }}_amd64.deb"
-

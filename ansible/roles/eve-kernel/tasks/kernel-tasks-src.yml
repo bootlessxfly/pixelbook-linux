@@ -18,7 +18,7 @@
   git:
     repo: https://chromium.googlesource.com/chromiumos/third_party/kernel
     depth: 1
-    dest: "{{ eve_kernel_workdir }}" 
+    dest: "{{ eve_kernel_workdir }}"
     version: "{{ eve_kernel_branch }}"
 
 - name: Copy kernel config file
@@ -50,4 +50,3 @@
   args:
     creates: "/boot/{{ eve_kernel_compiled_name }}"
     chdir: "{{ eve_kernel_workdir }}"
-
