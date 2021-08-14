@@ -1,5 +1,5 @@
 ---
-- name: Install apt packages 
+- name: Install apt packages
   become: true
   apt:
     name:
@@ -23,5 +23,6 @@
       - libspeex-dev
       - libspeexdsp-dev
       - libasound2-dev
-    state: latest 
-
+      # We will use podman to build cras in ubuntu 19.04
+      - podman
+    state: latest

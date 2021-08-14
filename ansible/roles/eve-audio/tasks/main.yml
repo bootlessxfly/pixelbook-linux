@@ -14,6 +14,16 @@
     version: "{{ adhd_version }}"
     dest: "{{ adhd_workdir }}"
 
+- name: Create build container
+  command: podman create -it -v {{ adhd_workdir }}:{{ adhd_workdir }} --name cras-builder ubuntu:19.04 && podman start cras-builder
+
+- name: Generate cras/config (failure expected)
+  command: podman exec -it cras-builder cd {{ adhd_workdir }} && make
+  args:
+    creates: "{{ cras_workdir }}/configure"
+  ignore_errors: true
+
+
 - name: generate cras/config (failure expected)
   command: make
   args:
@@ -33,7 +43,7 @@
     creates: "{{ cras_workdir }}/src/cras"
     chdir: "{{ cras_workdir }}"
 
-- name: install cras server binary 
+- name: install cras server binary
   become: true
   copy:
     remote_src: true
@@ -149,4 +159,3 @@
 - name: enable headphone jack listener service
   become: true
   command: "systemctl enable eve-headphone-jack-listener"
-

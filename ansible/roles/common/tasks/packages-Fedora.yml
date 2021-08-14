@@ -1,5 +1,5 @@
 ---
-- name: Install dnf packages 
+- name: Install dnf packages
   become: true
   dnf:
     name:
@@ -11,7 +11,7 @@
 
       # For bluetooth selinux fix
       - selinux-policy
-      - python2-libselinux
+      - python-libselinux
 
       # Audio / CRAS dependencies
       - acpid
@@ -22,5 +22,6 @@
       - ladspa-devel
       - speex-devel
       - speexdsp-devel
-    state: latest 
-
+      # We will use podman to build cras in ubuntu 19.04
+      - podman
+    state: latest
