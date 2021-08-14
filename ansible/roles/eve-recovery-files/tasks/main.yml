@@ -6,7 +6,14 @@
     mode: 0777
     state: directory
 
- #### Copy files from eve recovery image 
+- name: Create kernel-config dir to build packages
+  become: false
+  file:
+    path: "{{ kernel_config_dir }}"
+    mode: 0777
+    state: directory
+
+ #### Copy files from eve recovery image
 
 - name: Download eve recovery image
   get_url:
@@ -49,7 +56,7 @@
   become: true
   mount:
     path: "{{ recovery_mount_point }}"
-    src: "/dev/mapper/{{ mapper_device }}" 
+    src: "/dev/mapper/{{ mapper_device }}"
     fstype: ext2
     opts: ro
     state: mounted
@@ -64,9 +71,8 @@
   become: true
   command: "rsync -av {{ recovery_mount_point }}/opt/google/{{ item }} /opt/google"
   with_items:
-    - disk
     - dsm
-    - kbl-rt5514-hotword-support 
+    - kbl-rt5514-hotword-support
     - touch
 
 - name: Copy all firmware files from recovery image to /lib/firmware
@@ -81,16 +87,19 @@
 
 - name: Copy the alsa UCM configuration for eve's soundcard from recovery image
   become: true
-  command: "rsync -av {{ recovery_mount_point }}/usr/share/alsa/ucm/kbl_r5514_5663_max /usr/share/alsa/ucm"
+  command: "rsync -av {{ recovery_mount_point }}/usr/share/alsa/ucm/kbl-r5514-5663-max /usr/share/alsa/ucm"
 
 
 - name: Copy cras souncard config files from recovery image
   become: true
   command: "rsync -av {{ recovery_mount_point }}/etc/cras {{ cras_etc_dir }}"
 
+- name: Copy kernel config files from recovery image
+  become: true
+  command: "rsync -av {{ recovery_mount_point }}/lib/modules/5.4.109-26092-g9d947a4eeb73/kernel/kernel/configs.ko {{ kernel_config_dir }}/configs.ko"
+
 - name: Unmount recovery image
   become: true
   mount:
     path: "{{ recovery_mount_point }}"
     state: absent
- 
