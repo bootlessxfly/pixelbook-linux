@@ -165,3 +165,6 @@
 - name: enable headphone jack listener service
   become: true
   command: "systemctl enable eve-headphone-jack-listener"
+
+- name: Destroy cras builder
+  command: "podman rm -f cras-builder"
