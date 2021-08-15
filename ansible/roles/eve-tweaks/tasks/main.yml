@@ -33,6 +33,10 @@
 
 ### tweak touchpad pressure for libinput
 
+- name: create libinput folder
+  become: true
+  command: mkdir /etc/libinput
+
 - name: Copy libinput touchpad pressure tweak file
   become: true
   copy:
@@ -66,7 +70,7 @@
 
 ### Map google assistant key to super
 #
-#   note: change eve_keyboard_assistant_keycode var if you want a 
+#   note: change eve_keyboard_assistant_keycode var if you want a
 #   different keycode for the google assistant key.
 #
 #   you can also set eve_keyboard_search_keycode to remap the search
