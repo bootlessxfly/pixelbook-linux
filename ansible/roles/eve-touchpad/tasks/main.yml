@@ -6,7 +6,7 @@
   dnf:
     name:
       - gtest-devel
-      - jsoncpp-devel1
+      - jsoncpp-devel
       - libXi-devel
       - xorg-x11-proto-devel
       - xorg-x11-server-devel
