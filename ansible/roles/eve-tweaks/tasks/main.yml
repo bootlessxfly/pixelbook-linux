@@ -36,6 +36,7 @@
 - name: create libinput folder
   become: true
   command: mkdir /etc/libinput
+  ignore_errors: true
 
 - name: Copy libinput touchpad pressure tweak file
   become: true
