@@ -13,6 +13,19 @@
       - selinux-policy
       - python-libselinux
 
+      # Additional dependencies
+      - acpid
+      - libudev-devel
+      - sbc-devel
+      - alsa-lib-devel
+      - iniparser-devel
+      - ladspa-devel
+      - speex-devel
+      - speexdsp-devel
+
+
+
+
       # We will use podman to build cras in ubuntu 19.04
       - podman
     state: latest

@@ -85,9 +85,9 @@
     path: /usr/share/alsa/ucm
     state: directory
 
-- name: Copy the alsa UCM configuration for eve's soundcard from recovery image
-  become: true
-  command: "rsync -av {{ recovery_mount_point }}/usr/share/alsa/ucm/kbl-r5514-5663-max /usr/share/alsa/ucm"
+# - name: Copy the alsa UCM configuration for eve's soundcard from recovery image
+#   become: true
+#   command: "rsync -av {{ recovery_mount_point }}/usr/share/alsa/ucm/kbl-r5514-5663-max /usr/share/alsa/ucm"
 
 
 - name: Copy cras souncard config files from recovery image
@@ -112,7 +112,11 @@
 
 - name: Setup pipewire
   become: true
-  command: "sudo dnf swap --allowerasing pipewire-pulseaudio pulseaudio -y"
+  command: "dnf swap --allowerasing pipewire-pulseaudio pulseaudio -y"
+
+- name: Install pixelbook ucm profile
+  become: true
+  command: "dnf -y install pixelbook-alsa-ucm"
 
 - name: Unmount recovery image
   become: true
