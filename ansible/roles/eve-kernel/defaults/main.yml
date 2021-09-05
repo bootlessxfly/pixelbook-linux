@@ -4,7 +4,7 @@ main_workdir: /opt/eve-linux-setup
 login_user: vagrant # override at command line with local username
 
 # install-kernel.yml
-kernel_install_type: src
+kernel_install_type: fed
 force_kernel_install: false
 
 eve_kernel_name: "4.4.178chromium-g4245c5e1"

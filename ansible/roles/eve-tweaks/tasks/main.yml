@@ -1,10 +1,10 @@
 ---
  ### blacklist intel sound module (required for audio)
-- name: Copy module blacklist file
-  become: true
-  copy:
-    src: modprobe-blacklist.conf
-    dest: /lib/modprobe.d/eve-blacklist.conf
+# - name: Copy module blacklist file
+#   become: true
+#   copy:
+#     src: modprobe-blacklist.conf
+#     dest: /lib/modprobe.d/eve-blacklist.conf
 
 ### Enable zram swap
 - name: Copy zram setup script
@@ -46,29 +46,51 @@
 
 ### keyboard backlight
 
-- name: Ensure "leds" group exists
+# - name: Ensure "leds" group exists
+#   become: true
+#   group:
+#     name: leds
+#
+# - name: Ensure login user is in "leds" group
+#   become: true
+#   command: "usermod -aG leds {{ login_user }}"
+
+# - name: Copy pixelbook udev rules file
+#   become: true
+#   copy:
+#     src: keyboard-backlight-udev.rules
+#     dest: /lib/udev/rules.d/99-pixelbook.rules
+#
+# - name: Copy brightness control script
+#   become: true
+#   copy:
+#     src: eve-keyboard-brightness.sh
+#     dest: /usr/local/bin/eve-keyboard-brightness.sh
+#     mode: 0755
+
+- name: Install keyboard hotkeys from Copr
   become: true
-  group:
-    name: leds
+  command: "dnf -y install pixelbook-udev"
 
-- name: Ensure login user is in "leds" group
+- name: Configure Backlight Control
   become: true
-  command: "usermod -aG leds {{ login_user }}"
+  command: "echo 'options i915 enable_dpcd_backlight=1' | tee /etc/modprobe.d/i915.conf & sudo dracut -f"
 
-- name: Copy pixelbook udev rules file
+- name: Install pixelbook-scripts from copr
   become: true
-  copy:
-    src: keyboard-backlight-udev.rules
-    dest: /lib/udev/rules.d/99-pixelbook.rules
+  command: "sudo dnf -y install pixelbook-scripts"
 
-- name: Copy brightness control script
+- name: Add user to input group
   become: true
-  copy:
-    src: eve-keyboard-brightness.sh
-    dest: /usr/local/bin/eve-keyboard-brightness.sh
-    mode: 0755
+  command: "sudo usermod -aG input $USER"
 
+- name: Enable ACPID
+  become: true
+  command: "sudo systemctl enable acpid"
 
+- name: Disable Tap to drag
+  become: true
+  command: "gsettings set org.gnome.desktop.peripherals.touchpad tap-and-drag false"  
 ### Map google assistant key to super
 #
 #   note: change eve_keyboard_assistant_keycode var if you want a
@@ -76,19 +98,19 @@
 #
 #   you can also set eve_keyboard_search_keycode to remap the search
 #   key from its default of Left Super (keycode leftmeta)
-- name: Copy keyboard hwdb file to remap assistant key
-  become: true
-  template:
-    src: 61-eve-keyboard.hwdb.j2
-    dest: /lib/udev/hwdb.d/61-eve-keyboard.hwdb
-    mode: 0600
-    owner: root
-    group: root
-
-- name: Update hwdb to load keyboard rules
-  become: true
-  command: "udevadm hwdb --update"
-
-- name: Trigger udev to apply keyboard rules
-  become: true
-  command: "udevadm trigger"
+# - name: Copy keyboard hwdb file to remap assistant key
+#   become: true
+#   template:
+#     src: 61-eve-keyboard.hwdb.j2
+#     dest: /lib/udev/hwdb.d/61-eve-keyboard.hwdb
+#     mode: 0600
+#     owner: root
+#     group: root
+#
+# - name: Update hwdb to load keyboard rules
+#   become: true
+#   command: "udevadm hwdb --update"
+#
+# - name: Trigger udev to apply keyboard rules
+#   become: true
+#   command: "udevadm trigger"

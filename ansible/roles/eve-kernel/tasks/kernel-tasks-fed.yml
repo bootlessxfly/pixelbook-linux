@@ -1,0 +1,16 @@
+---
+- name: Update OS
+  become: true
+  command: "dnf update -y"
+
+- name: Add pixelbook copr repo
+  become: true
+  command: "dnf -y copr enable jmontleon/pixelbook"
+
+- name: Pin pixelbook kernel as high priority
+  become: true
+  command: "dnf config-manager --setopt 'copr:copr.fedorainfracloud.org:jmontleon:pixelbook.priority=98' --save"
+
+- name: Install kernel image
+  become: true
+  command: "dnf update -y"

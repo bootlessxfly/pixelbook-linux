@@ -98,6 +98,22 @@
   become: true
   command: "rsync -av {{ recovery_mount_point }}/lib/modules/5.4.109-26092-g9d947a4eeb73/kernel/kernel/configs.ko {{ kernel_config_dir }}/configs.ko"
 
+- name: Copy tplg firmware file
+  become: true
+  command: "rsync -av {{ recovery_mount_point }}/lib/firmware/9d71-GOOGLE-EVEMAX-0-tplg.bin /lib/firmware/"
+
+- name: Copy dsp firmware file
+  become: true
+  command: "rsync -av {{ recovery_mount_point }}/lib/firmware/dsp_lib_dsm_core_spt_release.bin /lib/firmware/"
+
+- name: Copy intel firmware file
+  become: true
+  command: "rsync -av {{ recovery_mount_point }}/lib/firmware/intel/dsp_fw_C75061F3-F2B2-4DCC-8F9F-82ABB4131E66.bin /lib/firmware/intel"
+
+- name: Setup pipewire
+  become: true
+  command: "sudo dnf swap --allowerasing pipewire-pulseaudio pulseaudio -y"
+
 - name: Unmount recovery image
   become: true
   mount:
