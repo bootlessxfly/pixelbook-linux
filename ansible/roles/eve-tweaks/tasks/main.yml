@@ -50,10 +50,6 @@
   become: true
   command: "dnf -y install pixelbook-udev"
 
-- name: Add input user
-  become: true
-  command: "sudo usermod -aG input $USER"
-
 - name: Ensure "leds" group exists
   become: true
   group:
@@ -83,7 +79,7 @@
 
 - name: Copy Backlight Display config
   become: true
-  template:
+  copy:
     src: i915.conf
     dest: /etc/modprobe.d/i915.conf
     mode: 0644
@@ -94,9 +90,7 @@
   become: true
   command: "dracut -f"
 
-
-
-- name: Add user to input group
+- name: Add input user
   become: true
   command: "sudo usermod -aG input $USER"
 
@@ -107,7 +101,7 @@
 - name: Disable Tap to drag
   become: true
   command: "gsettings set org.gnome.desktop.peripherals.touchpad tap-and-drag false"
-### Map google assistant key to super
+## Map google assistant key to super
 #
 #   note: change eve_keyboard_assistant_keycode var if you want a
 #   different keycode for the google assistant key.

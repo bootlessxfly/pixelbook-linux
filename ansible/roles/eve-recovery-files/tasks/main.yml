@@ -1,4 +1,8 @@
 ---
+- name: Disable kernel upgrades
+  become: true
+  command: "dnf update --exclude=kernel*"
+
 - name: Create working dir to build packages
   become: true
   file:
@@ -110,9 +114,17 @@
   become: true
   command: "rsync -av {{ recovery_mount_point }}/lib/firmware/intel/dsp_fw_C75061F3-F2B2-4DCC-8F9F-82ABB4131E66.bin /lib/firmware/intel"
 
+# - name: Copy firmware files
+#   become: true
+#   command: "rsync -av {{ recovery_mount_point }}/lib/firmware/* /lib/firmware/"
+
 - name: Setup pipewire
   become: true
   command: "dnf swap --allowerasing pipewire-pulseaudio pulseaudio -y"
+
+- name: Add pixelbook copr repo
+  become: true
+  command: "dnf -y copr enable jmontleon/pixelbook"
 
 - name: Install pixelbook ucm profile
   become: true
