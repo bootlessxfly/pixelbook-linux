@@ -46,21 +46,29 @@
 
 ### keyboard backlight
 
-# - name: Ensure "leds" group exists
-#   become: true
-#   group:
-#     name: leds
-#
-# - name: Ensure login user is in "leds" group
-#   become: true
-#   command: "usermod -aG leds {{ login_user }}"
+- name: Install keyboard hotkeys from Copr
+  become: true
+  command: "dnf -y install pixelbook-udev"
 
-# - name: Copy pixelbook udev rules file
-#   become: true
-#   copy:
-#     src: keyboard-backlight-udev.rules
-#     dest: /lib/udev/rules.d/99-pixelbook.rules
-#
+- name: Add input user
+  become: true
+  command: "sudo usermod -aG input $USER"
+
+- name: Ensure "leds" group exists
+  become: true
+  group:
+    name: leds
+
+- name: Ensure login user is in "leds" group
+  become: true
+  command: "usermod -aG leds {{ login_user }}"
+
+- name: Copy pixelbook udev rules file
+  become: true
+  copy:
+    src: keyboard-backlight-udev.rules
+    dest: /lib/udev/rules.d/99-pixelbook.rules
+
 # - name: Copy brightness control script
 #   become: true
 #   copy:
@@ -68,9 +76,10 @@
 #     dest: /usr/local/bin/eve-keyboard-brightness.sh
 #     mode: 0755
 
-- name: Install keyboard hotkeys from Copr
+
+- name: Install pixelbook-scripts from copr
   become: true
-  command: "dnf -y install pixelbook-udev"
+  command: "sudo dnf -y install pixelbook-scripts"
 
 - name: Copy Backlight Display config
   become: true
@@ -85,9 +94,7 @@
   become: true
   command: "dracut -f"
 
-- name: Install pixelbook-scripts from copr
-  become: true
-  command: "sudo dnf -y install pixelbook-scripts"
+
 
 - name: Add user to input group
   become: true
@@ -116,10 +123,10 @@
 #     owner: root
 #     group: root
 #
-# - name: Update hwdb to load keyboard rules
-#   become: true
-#   command: "udevadm hwdb --update"
-#
-# - name: Trigger udev to apply keyboard rules
-#   become: true
-#   command: "udevadm trigger"
+- name: Update hwdb to load keyboard rules
+  become: true
+  command: "udevadm hwdb --update"
+
+- name: Trigger udev to apply keyboard rules
+  become: true
+  command: "udevadm trigger"
