@@ -8,32 +8,49 @@
 
 ###### Build and install cras (chromium audio server)
 
+
 - name: clone cras source
   git:
     repo: 'https://chromium.googlesource.com/chromiumos/third_party/adhd'
     version: "{{ adhd_version }}"
     dest: "{{ adhd_workdir }}"
 
-- name: generate cras/config (failure expected)
-  command: make
+- name: Create build container
+  command: "podman create -v {{ adhd_workdir }}:{{ adhd_workdir }}:z -it --name cras-builder ubuntu:19.04"
+  ignore_errors: true
+
+- name: start cras-builder
+  command: "podman start cras-builder"
+
+- name: update source.list
+  command: "podman exec -it cras-builder sed -i 's/archive/old-releases/g' /etc/apt/sources.list"
+
+- name: update repos (failue expected)
+  command: "podman exec -it cras-builder apt update"
+  ignore_errors: true
+
+- name: install dependencies for crash
+  command: podman exec -it cras-builder apt install build-essential libtool python python3 pkg-config kpartx acpid libudev-dev libsbc-dev libalsaplayer-dev libiniparser-dev ladspa-sdk libspeex-dev libspeexdsp-dev libasound2-dev -y
+
+- name: Generate cras/config (failure expected)
+  command: podman exec -w {{ adhd_workdir }} -it cras-builder make
   args:
     creates: "{{ cras_workdir }}/configure"
-    chdir: "{{ adhd_workdir }}"
   ignore_errors: true
 
 - name: configure cras
-  command: "env {{ cras_configure_env }} ./configure {{ cras_configure_opts }}"
+  command: "podman exec -w {{ cras_workdir }} -it cras-builder env {{ cras_configure_env }} ./configure {{ cras_configure_opts }}"
   args:
     creates: "{{ cras_workdir }}/Makefile"
     chdir: "{{ cras_workdir }}"
 
 - name: build cras
-  command: "make"
+  command: "podman exec -w {{ cras_workdir }} -it cras-builder make"
   args:
     creates: "{{ cras_workdir }}/src/cras"
     chdir: "{{ cras_workdir }}"
 
-- name: install cras server binary 
+- name: install cras server binary
   become: true
   copy:
     remote_src: true
@@ -150,3 +167,5 @@
   become: true
   command: "systemctl enable eve-headphone-jack-listener"
 
+- name: Destroy cras builder
+  command: "podman rm -f cras-builder"
